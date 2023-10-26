@@ -4,35 +4,10 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import {BiPlay} from "react-icons/bi"
 import {AiOutlinePlus} from "react-icons/ai"
-
-const apiKey="fda40c64cfb857e6f81ce954501e9d95";
-const url="https://api.themoviedb.org/3";
-const imgUrl="https://image.tmdb.org/t/p/original"
-// const upcoming="upcoming"; 
-// const popular= "popular";
-// const topRated= "top_rated";
-// const nowPlaying= "now_playing";
-
-
-const Card=({img})=>{
-  return(
-    <img className='card' src={img} alt="cover" />
-  )
-}
-
-const Row = ({title,arr})=>(
-  <div className='row'>
-    <h2>{title}</h2>
-
-    <div>
-      {arr.map((item,e)=>{
-        return(
-          <Card key={e} img={`${imgUrl}/${item.poster_path}`}/>
-        )
-      })}
-    </div>
-  </div>
-)
+import { AiOutlineInfoCircle } from 'react-icons/ai';
+import { useMediaQuery } from 'react-responsive'
+import {key as apiKey, url, imgUrl} from '../../config'
+import {Row} from "../../config"
 
 
 const Home = () => {
@@ -45,38 +20,7 @@ const Home = () => {
 
   const funcApiArr=["upcoming","popular","top_rated","now_playing"];
   const setFunctions=[setUpcomingMovies,setPopularMovies,setTopRatedMovies,setNowPlayingMovies];
-
-  // useEffect(()=>{{
-  //   const fetchUpcoming = async()=>{
-  //     const {data: {results}}= await axios.get(`${url}/movie/${upcoming}?api_key=${apiKey}`)
-  //     setUpcomingMovies(results)
-  //     // console.log(upcomingMovies);
-      
-  //   };
-  //   const fetchPopular = async()=>{
-  //     const {data: {results}}= await axios.get(`${url}/movie/${popular}?api_key=${apiKey}`)
-  //     setPopularMovies(results);
-      
-  //   };
-  //   const fetchTopRated = async()=>{
-  //     const {data: {results}}= await axios.get(`${url}/movie/${topRated}?api_key=${apiKey}`)
-  //     setTopRatedMovies(results)
-  //     // console.log(upcomingMovies);
-      
-  //   };
-  //   const fetchNowPlaying = async()=>{
-  //     const {data: {results}}= await axios.get(`${url}/movie/${nowPlaying}?api_key=${apiKey}`)
-  //     setNowPlayingMovies(results)
-  //     // console.log(upcomingMovies);
-      
-  //   };
-  
-  //   fetchUpcoming();
-  //   fetchPopular();
-  //   fetchTopRated();
-  //   fetchNowPlaying();
-  // },[])}
-
+  const isSmall = useMediaQuery({query:'(max-width : 450px)'});
   useEffect(()=>{
     const func = (funcapi,setfunc) =>{
       const fname = async()=>{
@@ -95,6 +39,7 @@ const Home = () => {
     funcApiArr.forEach((item,index)=>{
       func(item,setFunctions[index]);
     })
+
   },[]);
 
 
@@ -108,8 +53,9 @@ const Home = () => {
         {popularMovies[0] && <p>{popularMovies[0].overview}</p>}
         
         <div>
-          <button><BiPlay></BiPlay>Play</button>
-          <button>My List <AiOutlinePlus></AiOutlinePlus></button>
+          {isSmall&&<button key={3} className='info-icon'><AiOutlineInfoCircle></AiOutlineInfoCircle>Info</button>}
+          <button key={2}><BiPlay></BiPlay>Play</button>
+          <button key={1}><AiOutlinePlus></AiOutlinePlus>My List</button>
         </div>
       </div>
 
@@ -119,7 +65,7 @@ const Home = () => {
       <Row title={"Now Playing"} arr={nowPlayingMovies}></Row>
 
       <div className="genrebox">
-        {genre.map((item)=>(
+        {genre?.map((item)=>(
           <Link key={item.id} to={'/genre/${item.id'}>{item.name}</Link>
         ))}
       </div>
